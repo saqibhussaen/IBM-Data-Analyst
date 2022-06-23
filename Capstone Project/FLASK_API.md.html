@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!-- saved from url=(0159)https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/labs/module%201/Accessing%20Data%20Using%20APIs/FLASK_API.md.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./FLASK_API.md_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./FLASK_API.md_files/default.min.css">
+  <style type="text/css">/* this file is used for labs on cognitiveclass.ai that were written in markdown */
+
+/* applies to images, i.e. "![]()" in markdown */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* add padding and margins */
+body {
+  padding: 10px;
+  margin: 10px;
+}
+
+/* applies to tables, i.e. "|--|--|" in markdown */
+table td,
+table th {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+/* applies to using quotes, i.e. ">" in markdown */
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 1em 10px 0.1em 10px;
+  quotes: '\201C''\201D''\2018''\2019';
+}
+
+/* the headers need some spacing */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+  padding-top: 20px;
+}
+
+/* Add padding between nested list item */
+ul > li > ul {
+  padding-bottom: 1rem;
+}
+
+.code-badge-language {
+  display: none;
+}
+.code-badge-copy-icon {
+  background: url('data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgZGF0YS1wcmVmaXg9ImZhciIgZGF0YS1pY29uPSJjb3B5IiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY29weSBmYS13LTE0IiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDQ0OCA1MTIiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQzMy45NDEgNjUuOTQxbC01MS44ODItNTEuODgyQTQ4IDQ4IDAgMCAwIDM0OC4xMTggMEgxNzZjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2NDhINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2MzIwYzAgMjYuNTEgMjEuNDkgNDggNDggNDhoMjI0YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDh2LTQ4aDgwYzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWOTkuODgyYTQ4IDQ4IDAgMCAwLTE0LjA1OS0zMy45NDF6TTI2NiA0NjRINTRhNiA2IDAgMCAxLTYtNlYxNTBhNiA2IDAgMCAxIDYtNmg3NHYyMjRjMCAyNi41MSAyMS40OSA0OCA0OCA0OGg5NnY0MmE2IDYgMCAwIDEtNiA2em0xMjgtOTZIMTgyYTYgNiAwIDAgMS02LTZWNTRhNiA2IDAgMCAxIDYtNmgxMDZ2ODhjMCAxMy4yNTUgMTAuNzQ1IDI0IDI0IDI0aDg4djIwMmE2IDYgMCAwIDEtNiA2em02LTI1NmgtNjRWNDhoOS42MzJjMS41OTEgMCAzLjExNy42MzIgNC4yNDMgMS43NTdsNDguMzY4IDQ4LjM2OGE2IDYgMCAwIDEgMS43NTcgNC4yNDNWMTEyeiI+PC9wYXRoPjwvc3ZnPg==');
+  background-size: 100% 100%;
+}
+
+.code-badge {
+  bottom: 0 !important;
+  top: unset !important;
+  background: unset !important;
+}
+
+.code-badge > .code-badge-check-icon {
+  background: green;
+}
+.code-badge-check-icon {
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 7px;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGFyaWEtaGlkZGVuPSJ0cnVlIiBmb2N1c2FibGU9ImZhbHNlIiBkYXRhLXByZWZpeD0iZmFzIiBkYXRhLWljb249ImNoZWNrIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY2hlY2sgZmEtdy0xNiIgcm9sZT0iaW1nIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9IiYjMTA7ICAgIGNvbG9yOiAjMmFmZjMyOyYjMTA7Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xNzMuODk4IDQzOS40MDRsLTE2Ni40LTE2Ni40Yy05Ljk5Ny05Ljk5Ny05Ljk5Ny0yNi4yMDYgMC0zNi4yMDRsMzYuMjAzLTM2LjIwNGM5Ljk5Ny05Ljk5OCAyNi4yMDctOS45OTggMzYuMjA0IDBMMTkyIDMxMi42OSA0MzIuMDk1IDcyLjU5NmM5Ljk5Ny05Ljk5NyAyNi4yMDctOS45OTcgMzYuMjA0IDBsMzYuMjAzIDM2LjIwNGM5Ljk5NyA5Ljk5NyA5Ljk5NyAyNi4yMDYgMCAzNi4yMDRsLTI5NC40IDI5NC40MDFjLTkuOTk4IDkuOTk3LTI2LjIwNyA5Ljk5Ny0zNi4yMDQtLjAwMXoiLz48L3N2Zz4=');
+  background-size: 100% 100%;
+}
+</style></head>
+  <body data-new-gr-c-s-check-loaded="14.1065.0" data-gr-ext-installed="">
+    <h1>FLASK API</h1>
+    <center>
+      <img src="./FLASK_API.md_files/logo.png" width="300" alt="cognitiveclass.ai logo">
+    </center>
+    <h3>Estimated Time : 60 minutes</h3>
+    <h2>Objective</h2>
+    <p>Learn what an API is and when you should use one.</p>
+    <p>Learn how to build a web API that returns data to its users.</p>
+    <h3>What is an API?</h3>
+    <p>In programming more generally, the term API, short for Application Programming Interface, refers to a part of a computer program designed to be used or manipulated by another program.</p>
+    <p>Computer programs frequently need to communicate amongst themselves or with the underlying operating system, and APIs are one way they do it.</p>
+    <p>A web API allows for information or functionality to be manipulated by other programs via the internet.</p>
+    <p>For example, with Twitter’s web API, you can write a program in a language like Python or Javascript that can perform tasks such as favoriting tweets or collecting tweet metadata.</p>
+    <h3>When to Create an API</h3>
+    <p>In general, consider an API if:</p>
+    <ul>
+      <li>
+        <p>Your data set is large, making download via FTP unwieldy or resource-intensive.</p>
+      </li>
+      <li>
+        <p>Your users will need to access your data in real time, such as for display on another website or as part of an application.</p>
+      </li>
+      <li>
+        <p>Your data changes or is updated frequently.</p>
+      </li>
+      <li>
+        <p>Your users only need access to a part of the data at any one time.</p>
+      </li>
+      <li>
+        <p>Your users will need to perform actions other than retrieve data, such as contributing, updating, or deleting data.</p>
+      </li>
+    </ul>
+    <h3>API Terminology</h3>
+    <p>When using or building APIs, you will encounter these terms frequently:</p>
+    <ul>
+      <li>
+        <p>HTTP (Hypertext Transfer Protocol) is the primary means of communicating data on the web. HTTP implements a number of “methods,” which tell which direction data is moving and what should happen to it. The two most common are GET, which pulls data from a server, and POST, which pushes new data to a server.</p>
+      </li>
+      <li>
+        <p>URL (Uniform Resource Locator) - An address for a resource on the web, such as <a href="https://programminghistorian.org/about?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDA0321ENSkillsNetwork21426264-2022-01-01" target="_blank" rel="external">https://programminghistorian.org/about</a>. A URL consists of a protocol (http://), domain (programminghistorian.org), and optional path (/about). A URL describes the location of a specific resource, such as a web page. When reading about APIs, you may see the terms URL, request, URI, or endpoint used to describe adjacent ideas.</p>
+      </li>
+      <li>
+        <p>JSON (JavaScript Object Notation) is a text-based data storage format that is designed to be easy to read for both humans and machines. JSON is generally the most common format for returning data through an API, XML being the second most common.</p>
+      </li>
+    </ul>
+    <h3>Implementation of web API using Flask</h3>
+    <p><a href="https://flask.palletsprojects.com/en/2.0.x/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDA0321ENSkillsNetwork21426264-2022-01-01">Flask</a> is a web framework for Python, meaning that it provides functionality for building web applications, including managing HTTP requests and rendering templates</p>
+    <p>Flask maps HTTP requests to Python functions.</p>
+    <p>Let us understand this with a small example</p>
+    <p>
+      If you have installed jupyter notebook .
+      Create a new notebook and paste these lines of code
+    </p>
+    <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">less</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-less"> <span class="hljs-selector-tag"><span class="hljs-selector-tag">import</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">flask</span></span>
+
+<span class="hljs-selector-tag"><span class="hljs-selector-tag">app</span></span> = <span class="hljs-selector-tag"><span class="hljs-selector-tag">flask</span></span><span class="hljs-selector-class"><span class="hljs-selector-class">.Flask</span></span>(__name__)
+
+
+@<span class="hljs-selector-tag"><span class="hljs-selector-tag">app</span></span><span class="hljs-selector-class"><span class="hljs-selector-class">.route</span></span>(<span class="hljs-string"><span class="hljs-string">'/'</span></span>, methods=[<span class="hljs-string"><span class="hljs-string">'GET'</span></span>])
+<span class="hljs-selector-tag"><span class="hljs-selector-tag">def</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">home</span></span>():
+    <span class="hljs-selector-tag"><span class="hljs-selector-tag">return</span></span> "&lt;<span class="hljs-selector-tag"><span class="hljs-selector-tag">h1</span></span>&gt;<span class="hljs-selector-tag"><span class="hljs-selector-tag">Distant</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">Reading</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">Archive</span></span>&lt;/<span class="hljs-selector-tag"><span class="hljs-selector-tag">h1</span></span>&gt;&lt;<span class="hljs-selector-tag"><span class="hljs-selector-tag">p</span></span>&gt;<span class="hljs-selector-tag"><span class="hljs-selector-tag">This</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">site</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">is</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">a</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">prototype</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">API</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">for</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">distant</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">reading</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">of</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">science</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">fiction</span></span> <span class="hljs-selector-tag"><span class="hljs-selector-tag">novels</span></span>.&lt;/<span class="hljs-selector-tag"><span class="hljs-selector-tag">p</span></span>&gt;"
+
+<span class="hljs-selector-tag"><span class="hljs-selector-tag">app</span></span><span class="hljs-selector-class"><span class="hljs-selector-class">.run</span></span>()
+
+
+</code></pre>
+    <img src="./FLASK_API.md_files/one.png">
+    <p>Follow the link above, <a href="http://127.0.0.1:5000/" target="_blank" rel="external">http://127.0.0.1:5000/</a>, using your web browser to see the running application:</p>
+    <img src="./FLASK_API.md_files/2.png">
+    <p>In this case, we’ve mapped one URL path (‘/’) to one function, <strong>home</strong>. When we connect to the Flask server at <a href="http://127.0.0.1:5000/" target="_blank" rel="external">http://127.0.0.1:5000/</a>, Flask checks if there is a match between the path provided and a defined function. Since /, or no additional provided path, has been mapped to the home function, Flask runs the code in the function and displays the returned result in the browser.</p>
+    <p>In this case, the returned result is HTML markup for a home page welcoming visitors to the site hosting our API.</p>
+    <p>The process of mapping URLs to functions is called routing.</p>
+    <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">scheme</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-scheme">@app.route(<span class="hljs-symbol">'/</span>', methods=[<span class="hljs-symbol">'GET</span>'])
+
+</code></pre>
+    <p>syntax is the part of the program that lets Flask know that this function, home, should be mapped to the path /. The methods list (methods=['GET']) is a keyword argument that lets Flask know what kind of HTTP requests are allowed.</p>
+    <p>Below are brief explanations of the other components of the application:</p>
+    <ul>
+      <li>
+        <p>import flask — Imports the Flask library, making the code available to the rest of the application.</p>
+      </li>
+      <li>
+        <p>app = flask.Flask(<strong>name</strong>) — Creates the Flask application object, which contains data about the application and also methods (object functions) that tell the application to do certain actions. The last line, app.run(), is one such method.</p>
+      </li>
+      <li>
+        <p>app.config["DEBUG"] = True — Starts the debugger. With this line, if your code is malformed, you’ll see an error when you visit your app. Otherwise you’ll only see a generic message such as Bad Gateway in the browser when there’s a problem with your code.</p>
+      </li>
+      <li>
+        <p>app.run() — A method that runs the application server.</p>
+      </li>
+    </ul>
+    <h2>Creating the API</h2>
+    <p>Now that we have a running Flask application and know a little about what Flask does, we’re finally ready to implement a small API with data that we’ll define right in our application.</p>
+    <p>We’ll be adding our data as a list of Python dictionaries. Dictionaries in Python group pairs of keys and values, like this:</p>
+    <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">scheme</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-scheme">{
+    <span class="hljs-symbol">'key</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'value</span>',
+    <span class="hljs-symbol">'key</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'value</span>'
+}
+
+
+</code></pre>
+    <p>The key identifies the type of information represented, such as title or id. The value is the actual data. For example, a short telephone book might take this format:</p>
+    <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">scheme</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-scheme">[
+    {
+        <span class="hljs-symbol">'name</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'Alexander</span> Graham Bell',
+        <span class="hljs-symbol">'number</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'1-333-444-5555</span>'
+    },
+    {
+        <span class="hljs-symbol">'name</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'Thomas</span> A. Watson',
+        <span class="hljs-symbol">'number</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'1-444-555-6666</span>'
+    }
+]
+
+
+
+</code></pre>
+    <p>The above phone book is a list of two dictionaries. Each dictionary is a phone book entry consisting of two keys, name and number, each paired with a value that provides the actual information.</p>
+    <ul>
+      <li>
+        <p>Here we are creating a list of dictionaries. Each dictionary will contain ID number, title, author, first sentence, and year of publication for each book.</p>
+      </li>
+      <li>
+        <p>We will add 3 route methods</p>
+        <ul>
+          <li>
+            <p>@app.route('/', methods=['GET']) which will map to method home which will return a html response</p>
+          </li>
+          <li>
+            <p>@app.route('/books/all', methods=['GET']) which will map to method api_all returning all book information as a json response.</p>
+          </li>
+          <li>
+            <p>@app.route('/books', methods=['GET']) which will map to method api_id() filterning and returning book information with respect to an id.</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">scheme</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-scheme">import flask
+from flask import request, jsonify
+
+app = flask.Flask(<span class="hljs-name">__name__</span>)
+
+# Create some test data for our catalog in the form of a list of dictionaries.
+books = [
+    {<span class="hljs-symbol">'id</span><span class="hljs-symbol">':</span> <span class="hljs-number">0</span>,
+     <span class="hljs-symbol">'title</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'A</span> Fire Upon the Deep',
+     <span class="hljs-symbol">'author</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'Vernor</span> Vinge',
+     <span class="hljs-symbol">'first_sentence</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'The</span> coldsleep itself was dreamless.',
+     <span class="hljs-symbol">'year_published</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'1992</span>'},
+    {<span class="hljs-symbol">'id</span><span class="hljs-symbol">':</span> <span class="hljs-number">1</span>,
+     <span class="hljs-symbol">'title</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'The</span> Ones Who Walk Away From Omelas',
+     <span class="hljs-symbol">'author</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'Ursula</span> K. Le Guin',
+     <span class="hljs-symbol">'first_sentence</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'With</span> a clamor of bells that set the swallows soaring, the Festival of Summer came to the city Omelas, bright-towered by the sea.',
+     <span class="hljs-symbol">'published</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'1973</span>'},
+    {<span class="hljs-symbol">'id</span><span class="hljs-symbol">':</span> <span class="hljs-number">2</span>,
+     <span class="hljs-symbol">'title</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'Dhalgren</span>',
+     <span class="hljs-symbol">'author</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'Samuel</span> R. Delany',
+     <span class="hljs-symbol">'first_sentence</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'to</span> wound the autumnal city.',
+     <span class="hljs-symbol">'published</span><span class="hljs-symbol">':</span> <span class="hljs-symbol">'1975</span>'}
+]
+
+
+@app.route(<span class="hljs-symbol">'/</span>', methods=[<span class="hljs-symbol">'GET</span>'])
+def home():
+    return ''<span class="hljs-symbol">'&lt;h1&gt;Distant</span> Reading Archive&lt;/h<span class="hljs-number">1</span>&gt;
+&lt;p&gt;A prototype API for distant reading of science fiction novels.&lt;/p&gt;'''
+
+
+@app.route(<span class="hljs-symbol">'/books/all</span>', methods=[<span class="hljs-symbol">'GET</span>'])
+def api_all():
+    return jsonify(<span class="hljs-name">books</span>)
+
+
+@app.route(<span class="hljs-symbol">'/books</span>', methods=[<span class="hljs-symbol">'GET</span>'])
+def api_id():
+    # Check if an ID was provided as part of the URL.
+    # If ID is provided, assign it to a variable.
+    # If no ID is provided, display an error in the browser.
+    if <span class="hljs-symbol">'id</span>' in request.args:
+        id = int(<span class="hljs-name">request.args</span>[<span class="hljs-symbol">'id</span>'])
+    else:
+        return <span class="hljs-string">"Error: No id field provided. Please specify an id."</span>
+
+    # Create an empty list for our results
+    results = []
+
+    # Loop through the data and match results that fit the requested ID.
+    # IDs are unique, but other fields might return many results
+    for book in books:
+        if book[<span class="hljs-symbol">'id</span>'] == id:
+            results.append(<span class="hljs-name">book</span>)
+
+    # Use the jsonify function from Flask to convert our list of
+    # Python dictionaries to the JSON format.
+    return jsonify(<span class="hljs-name">results</span>)
+
+app.run()
+
+
+</code></pre>
+    <p>Here when you give the url</p>
+    <p><a href="http://127.0.0.1:5000/books/all" target="_blank" rel="external">http://127.0.0.1:5000/books/all</a></p>
+    <p>you will be able to view the response showing all books . 
+      <img src="./FLASK_API.md_files/three.png">
+    </p>
+    <p>Further if you want to make a specific request, you need to add the filtering criteria like for example in this case <strong>id</strong></p>
+    <p>
+      the url will be as follows
+      <a href="http://127.0.0.1:5000/books?id=0" target="_blank" rel="external">http://127.0.0.1:5000/books?id=0</a>
+      you will be able to view results with respect to id =0 as follows
+    </p>
+    <img src="./FLASK_API.md_files/four.png">
+    <blockquote>
+      <p>Note :Here the response is a json response.</p>
+    </blockquote>
+    <h3>Here you have learnt how to build a web API that returns data to its users using python web framewok Flask.</h3>
+    <h2>Author</h2>
+    <p><a href="https://www.linkedin.com/in/lakshmi-holla-b39062149/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDA0321ENSkillsNetwork21426264-2022-01-01" target="_blank" rel="external">Lakshmi Holla</a></p>
+    <p><a href="https://www.linkedin.com/in/malika-goyal-04798622/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDA0321ENSkillsNetwork21426264-2022-01-01" target="_blank" rel="external">Malika Singla</a></p>
+    <h2>Changelog</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Changed by</th>
+          <th>Change Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2021-12-23</td>
+          <td>0.1</td>
+          <td>Lakshmi Holla, Malika Singla</td>
+          <td>Initial Version</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2></h2>
+    <h3 align="center">© IBM Corporation 2021. All rights reserved.</h3>
+    <h3></h3>
+    <script>window.addEventListener('load', function() {
+snFaculty.inject();
+});</script>
+    <script src="./FLASK_API.md_files/inject.43989f87.js.download"></script>
+    <script src="./FLASK_API.md_files/highlight.min.js.download"></script>
+    <script src="./FLASK_API.md_files/highlightjs-badge.min.js.download"></script>
+  
+
+<style>
+@media print {
+   .code-badge { display: none; }
+}
+    .code-badge-pre {
+        position: relative;
+    }
+    .code-badge {
+        display: flex;
+        flex-direction: row;
+        white-space: normal;
+        background: transparent;
+        background: #333;
+        color: white;
+        font-size: 0.875em;
+        opacity: 0.5;
+        transition: opacity linear 0.5s;
+        border-radius: 0 0 0 7px;
+        padding: 5px 8px 5px 8px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .code-badge.active {
+        opacity: 0.8;
+    }
+
+    .code-badge:hover {
+        opacity: .95;
+    }
+
+    .code-badge a,
+    .code-badge a:hover {
+        text-decoration: none;
+    }
+
+    .code-badge-language {
+        margin-right: 10px;
+        font-weight: 600;
+        color: goldenrod;
+    }
+    .code-badge-copy-icon {
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 0 7px;
+        margin-top:2;
+    }
+    .fa.text-success:{ color: limegreen !important }
+</style><div id="CodeBadgeTemplate" style="display:none">
+    <div class="code-badge">
+        <div class="code-badge-language">{{language}}</div>
+        <div title="Copy to clipboard">
+            <i class="{{copyIconClass}} code-badge-copy-icon"></i>
+        </div>
+     </div>
+</div></body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
